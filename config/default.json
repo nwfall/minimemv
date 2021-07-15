@@ -1,0 +1,13 @@
+/*
+    Default minimal config for minimemv
+
+    Comments are not part of json file specification
+    but they are stripped by config npm package
+    see https://github.com/lorenwest/node-config for details
+*/
+{
+    "instance": {},
+    "extract": {},
+    "transform": [],
+    "load": []
+}
