@@ -2,23 +2,27 @@
 let TAG = 'minimemv';
 
 let config;
-let instanceCfg, extractCfg, transformCfg, loadCfg;
-loadConfig();
+let extractor;
 
-if (instanceCfg.name) TAG = instanceCfg.name;
-console.log(TAG);
-function loadConfig() {
+(function init() {
     try {
         config = require('config');
 
-        instanceCfg = configGetType('instance', '[object Object]');
-        extractCfg = configGetType('extract', '[object Object]');
-        transformCfg = configGetType('transform', '[object Array]');
-        loadCfg = configGetType('load', '[object Array]');
+        let instanceCfg = configGetType('instance', '[object Object]');
+        let extractCfg = configGetType('extract', '[object Object]');
+        let transformCfg = configGetType('transform', '[object Array]');
+        let loadCfg = configGetType('load', '[object Array]');
+
+        makeInstance(instanceCfg);
+        extractor = require('./extract/base').make(extractCfg);
     }
     catch (e) {
         crash(e.message);
     }
+})();
+
+function makeInstance({name}) {
+    TAG = name | TAG;
 }
 
 function configGetType(id, objType) {

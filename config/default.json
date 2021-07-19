@@ -7,7 +7,12 @@
 */
 {
     "instance": {},
-    "extract": {},
+    "extract": {
+        "type": "debug",
+        "config": {
+
+        }
+    },
     "transform": [],
     "load": []
 }
