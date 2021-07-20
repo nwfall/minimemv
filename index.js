@@ -3,6 +3,8 @@ let TAG = 'minimemv';
 
 let config;
 let extractor;
+let transformers = new Array();
+let loaders = new Array();
 
 (function init() {
     try {
@@ -14,12 +16,37 @@ let extractor;
         let loadCfg = configGetType('load', '[object Array]');
 
         makeInstance(instanceCfg);
+        
         extractor = require('./extract/base').make(extractCfg);
+        extractor.on('message', onMessage);
+        extractor.on('error', crash);
+
+        for (let cfg of transformCfg)
+            transformers.push(require('./transform/base').make(cfg));
+
+        for (let cfg of loadCfg)
+            loaders.push(require('./load/base').make(cfg));
     }
-    catch (e) {
-        crash(e.message);
+    catch (error) {
+        throw error;
+        crash(error.message);
     }
 })();
+
+function onMessage(envelope, cb) {
+    console.log('wow, emitter emitted a message', envelope);
+    
+    let p = Promise.resolve(envelope);
+
+    for (let transformer of transformers)
+        p.then(transformer.process(envelope));
+
+    for (let loader of loaders)
+        p.then(loader.process(envelope));
+
+    p.then(() => cb());
+    p.catch((err) => cb(err));
+}
 
 function makeInstance({name}) {
     TAG = name | TAG;

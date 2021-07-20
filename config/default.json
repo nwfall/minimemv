@@ -10,9 +10,14 @@
     "extract": {
         "type": "debug",
         "config": {
-
+            "envelopes": []
         }
     },
     "transform": [],
-    "load": []
+    "load": [{
+        "type": "debug",
+        "config": {
+            "tag": "debug"
+        }
+    }]
 }

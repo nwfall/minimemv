@@ -10,9 +10,32 @@ class ExtractBase extends EventEmitter {
         return new Class(config.config);
     }
 
-    constructor (config) {
+    #messages = new Array();
+
+    constructor () {
         super ();
-        
+    }
+
+    push(envelope) {
+        this.#messages.push(envelope);
+    }
+    
+    enqueue() {
+        let env = this.#messages.shift();
+        if (env) setImmediate(this.emitMessage.bind(this, env));
+        else this.emit('end');
+    }
+
+    emitMessage(envelope) {
+        let that = this;
+        this.emit('message', envelope, (err) => {
+            if(err) return that.emitError(err);
+            that.enqueue();
+        })
+    }
+
+    emitError(err) {
+        this.emit('error', err);
     }
 }
 
